@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Alert</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Create Alert</h2>
+        <form id="createAlertForm">
+            <div class="form-group">
+                <label for="symbol">Symbol</label>
+                <input type="text" class="form-control" id="symbol" required>
+            </div>
+            <div class="form-group">
+                <label for="alert_price">Alert Price</label>
+                <input type="number" class="form-control" id="alert_price" required>
+            </div>
+            <div class="form-group">
+                <label for="timeframe">Timeframe</label>
+                <input type="text" class="form-control" id="timeframe" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Alert</button>
+        </form>
+        <div id="responseMessage" class="mt-3"></div>
+    </div>
+    
+    <script>
+        document.getElementById('createAlertForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const symbol = document.getElementById('symbol').value;
+            const alert_price = document.getElementById('alert_price').value;
+            const timeframe = document.getElementById('timeframe').value;
+
+            // Retrieve the access token from local storage
+            const accessToken = localStorage.getItem('access_token');
+
+            if (!accessToken) {
+                document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">No access token found. Please log in again.</div>';
+                return;
+            }
+
+            console.log(access_token)
+            try {
+                const response = await fetch('/alerts/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ symbol, alert_price, timeframe }),
+                });
+
+                const data = await response.json();
+                const messageElement = document.getElementById('responseMessage');
+
+                if (response.ok) {
+                    messageElement.innerHTML = '<div class="alert alert-success">Alert created successfully!</div>';
+                } else {
+                    messageElement.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
+            }
+        });
+    </script>
+</body>
+</html>
