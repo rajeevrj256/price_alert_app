@@ -14,7 +14,7 @@ def login_page():
     return render_template('login.html')
 
 # Handle login requests
-@login_blueprint.route('/login', methods=['POST'])
+@login_blueprint.route('/', methods=['POST'])
 def login():
     data = request.json
     username = data.get('username')

@@ -1,10 +1,14 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from utils.auth import bcrypt
 from utils.db import db
 
 signup_blueprint = Blueprint('signup', __name__)
 
 users_collection = db['users']
+
+@signup_blueprint.route('/signup', methods=['GET'])
+def signup_page():
+    return render_template('signup.html')
 
 @signup_blueprint.route('/register', methods=['POST'])
 def register():

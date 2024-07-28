@@ -21,6 +21,9 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
         <div id="responseMessage" class="mt-3"></div>
+        <div class="mt-3">
+            <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+        </div>
     </div>
     
     <script>
@@ -31,7 +34,7 @@
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/login', {
+                const response = await fetch('/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -52,7 +55,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
+                messageElement.innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
             }
         });
     </script>
