@@ -7,7 +7,7 @@ get_alerts_blueprint = Blueprint('get_alerts', __name__)
 
 alerts_collection = db['alerts']
 
-@get_alerts_blueprint.route('/alerts/', methods=['GET'])
+@get_alerts_blueprint.route('/alerts', methods=['GET'])
 @jwt_required()
 def get_alerts():
     current_user = get_jwt_identity()

@@ -43,19 +43,14 @@
                 });
 
                 const data = await response.json();
-                const messageElement = document.getElementById('responseMessage');
-
-                if (response.ok) {
-                    // Store the access token in local storage
-                    localStorage.setItem('access_token', data.access_token);
-                    // Redirect to the create alert page
-                    window.location.href = '/alerts/create';
+                if (data.token) {
+                    localStorage.setItem("access_token", data.token);
+                    window.location.href = data.redirect_url;
                 } else {
-                    messageElement.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    console.log("Invalid input");
                 }
             } catch (error) {
-                console.error('Error:', error);
-                messageElement.innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
+                console.log('Error:', error);
             }
         });
     </script>

@@ -1,40 +1,97 @@
 import websocket
 import json
+import time
 from threading import Thread
 from utils.db import db
 
 alerts_collection = db['alerts']
 
-def check_alert(price):
-    alerts = alerts_collection.find({'alert_price': {'$gte': price}, 'status': 'created'})
-    for alert in alerts:
-        alerts_collection.update_one({'_id': alert['_id']}, {'$set': {'status': 'triggered'}})
-        print(f"Alert triggered for symbol {alert['symbol']} at price {price}")
+def check_alert(prev, curr, symbol):
+    try:
+        alerts = alerts_collection.find({'symbol': symbol, 'status': 'created'})
+        for alert in alerts:
+            alertprice=float(alert['alert_price'])
+            if prev < alertprice <= curr or prev > alertprice >= curr:
+                alerts_collection.update_one({'_id': alert['_id']}, {'$set': {'status': 'triggered'}})
+                print(f"Alert triggered for symbol {alert['symbol']} at price {alert['alert_price']}")
+    except Exception as e:
+        print('Error:', e)
+
 
 class BinanceWebSocketClient:
-    def __init__(self, symbol, interval, alert_callback):
-        self.symbol = symbol
-        self.interval = interval
+    def __init__(self, alert_callback):
+        self.isopen=False
+        #TODO:handlelock
         self.alert_callback = alert_callback
-        self.socket = f'wss://stream.binance.com:9443/ws/{self.symbol}@kline_{self.interval}'
-
+        self.url = f'wss://stream.binance.com:9443/ws/trade'
+        self.symbols=[]
+        
+        self.prev={}
+    
+       
+    def init(self):    
+        self.ws = websocket.WebSocketApp(
+            self.url,
+            on_message=self.on_message,
+            on_close=self.on_close,
+            on_open=self.on_open
+            
+        )
+         
     def on_message(self, ws, message):
         data = json.loads(message)
-        price = float(data['k']['c'])
-        self.alert_callback(price)
+        if "p" in data:
+            price = float(data['p'])
+            sym=data['s']
+            if sym not in self.prev:
+                self.prev[sym]=price
+            self.alert_callback(self.prev[sym],price,sym)
+            self.prev[sym]=price
+            
+            
+        
+        
 
     def on_close(self, ws, close_status_code, close_msg):
         print("### closed ###")
-
+    
+    
+    def on_open(self,ws):
+        self.isopen=True
+        
+        print("open")
+        #self.subscribe(ws,'btcusdt')
+        
+    def subscribe(self,symbol):
+        if self.isopen==False:
+            return False
+        if symbol in self.symbols:
+            return True
+        print("Sending subscribe",symbol)
+        self.ws.send(json.dumps({"method": "SUBSCRIBE","params":[f"{symbol.lower()}@trade"],"id": 1}))
+        self.symbols.append(symbol)
+        return True
+    
+    
     def run(self):
-        ws = websocket.WebSocketApp(
-            self.socket,
-            on_message=self.on_message,
-            on_close=self.on_close
-        )
-        ws.run_forever()
+        self.init()
+        self.ws.run_forever()  
 
 def start_websocket_client():
-    client = BinanceWebSocketClient('btcusdt', '1m', check_alert)
+    client = BinanceWebSocketClient(check_alert)
+    
+    
     ws_thread = Thread(target=client.run)
+    ws_thread.daemon=True
     ws_thread.start()
+    return client
+    #while not client.subscribe('btcusdt'):
+        #pass
+    #while True:
+        #pass
+
+
+if __name__ == "__main__":
+    
+    start_websocket_client()
+    #app.run(debug=True)
