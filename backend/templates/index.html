@@ -52,6 +52,7 @@
           
 
             const accessToken = localStorage.getItem('access_token');
+            console.log(accessToken)
 
             if (!accessToken) {
                 document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">No access token found. Please log in again.</div>';
@@ -63,8 +64,9 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': accessToken
                     },
+                    
                     body: JSON.stringify({ symbol, alert_price}),
                 });
 

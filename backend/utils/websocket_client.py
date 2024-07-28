@@ -3,6 +3,7 @@ import json
 import time
 from threading import Thread
 from utils.db import db
+from utils.mail import send_email
 
 alerts_collection = db['alerts']
 
@@ -13,7 +14,9 @@ def check_alert(prev, curr, symbol):
             alertprice=float(alert['alert_price'])
             if prev < alertprice <= curr or prev > alertprice >= curr:
                 alerts_collection.update_one({'_id': alert['_id']}, {'$set': {'status': 'triggered'}})
+                send_email('rjrajeev5918@gmail.com', 'alert',f"Alert triggered for symbol {alert['symbol']} at price {alert['alert_price']}" )
                 print(f"Alert triggered for symbol {alert['symbol']} at price {alert['alert_price']}")
+                
     except Exception as e:
         print('Error:', e)
 

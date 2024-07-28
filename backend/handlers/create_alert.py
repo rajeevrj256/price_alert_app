@@ -12,7 +12,7 @@ client=start_websocket_client()
 
 
 @create_alert_blueprint.route('/create', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def create_alert():
     print("here")
     #current_user = get_jwt_identity()
