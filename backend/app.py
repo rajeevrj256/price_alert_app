@@ -18,4 +18,4 @@ register_blueprints(app)
 if __name__ == "__main__":
     #start_websocket_client()
     #send_email("body")
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

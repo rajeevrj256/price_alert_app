@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template,redirect, url_for,make_response
 from flask_jwt_extended import create_access_token,jwt_required
 from flask_bcrypt import Bcrypt
+from bson import ObjectId
 from utils.db import db
 
 login_blueprint = Blueprint('login', __name__)
@@ -36,3 +37,4 @@ def login():
         return jsonify({'token':f"Bearer {access_token}", 'redirect_url': url_for("login.create_alert_form")})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
+

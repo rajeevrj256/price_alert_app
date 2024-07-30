@@ -2,4 +2,8 @@ Flask
 Flask-JWT-Extended
 Flask-Bcrypt
 pymongo
+flask-paginate
 websockets
+websocket-client
+requests
+python-dotenv
