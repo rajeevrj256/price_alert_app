@@ -6,4 +6,5 @@ flask-paginate
 websockets
 websocket-client
 requests
+flask-cors
 python-dotenv

@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify, render_template,redirect, url_for,make_response
 from flask_jwt_extended import create_access_token,jwt_required
 from flask_bcrypt import Bcrypt
-from bson import ObjectId
 from utils.db import db
 
 login_blueprint = Blueprint('login', __name__)
 bcrypt = Bcrypt()
 
 users_collection = db['users']
+alerts_collection=db['alerts']
 
 # Serve the login page
 @login_blueprint.route('/', methods=['GET'])
@@ -19,6 +19,10 @@ def login_page():
 def create_alert_form():
     return render_template('index.html')
 
+@login_blueprint.route('/alerts/all', methods=['GET'])
+#@jwt_required()
+def all_alert_form():
+    return render_template('alerts.html')
 # Handle login requests
 @login_blueprint.route('/', methods=['POST'])
 def login():
@@ -37,4 +41,10 @@ def login():
         return jsonify({'token':f"Bearer {access_token}", 'redirect_url': url_for("login.create_alert_form")})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
+
+
+@login_blueprint.route('/alerts/delete', methods=['GET'])
+# @jwt_required()
+def delete_alerts():
+    return render_template('delete.html')
 

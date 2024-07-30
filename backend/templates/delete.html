@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Alert</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Delete Alerts</h1>
+            <!-- Delete Alerts Button -->
+            <a href="/alerts" class="btn btn-danger">Create alerts</a>
+        </div>
+        <!-- Symbol Dropdown -->
+        <div class="form-group">
+            <label for="symbol-select">Select Symbol</label>
+            <select id="symbol-select" class="form-control">
+                <option value="">Select a symbol</option>
+                <!-- Options will be dynamically inserted here -->
+            </select>
+        </div>
+
+        <!-- Alert Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="alerts-table-body">
+                <!-- Alerts will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to fetch symbols data from the server
+        async function fetchSymbols() {
+            try {
+                const response = await fetch('/symbols');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const symbols = await response.json();
+                populateSymbolDropdown(symbols);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Function to populate the symbol dropdown
+        function populateSymbolDropdown(symbols) {
+            const select = document.getElementById('symbol-select');
+            symbols.forEach(symbol => {
+                const option = document.createElement('option');
+                option.value = symbol;
+                option.textContent = symbol;
+                select.appendChild(option);
+            });
+        }
+
+        // Function to fetch alerts data from the server
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const alerts = await response.json(); // Store alerts data
+                const filteredAlerts = alerts.filter(alert => alert.status === 'created');
+                populateTable(filteredAlerts);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Function to populate the table with alert data
+        function populateTable(alertsData) {
+            const tableBody = document.getElementById('alerts-table-body');
+            tableBody.innerHTML = ''; // Clear any existing rows
+
+            alertsData.forEach(alert => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${alert.symbol}</td>
+                    <td>${alert.alert_price}</td>
+                    <td>${alert.status}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteAlert('${alert._id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to delete an alert
+        async function deleteAlert(alertId) {
+            try {
+                const response = await fetch(`/alerts/${alertId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Refresh the alerts after deletion
+                fetchAlerts();
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Fetch symbols and alerts when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchSymbols();
+            fetchAlerts();
+        });
+    </script>
+</body>
+</html>

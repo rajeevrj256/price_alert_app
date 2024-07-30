@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Alert</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .btn-all-alerts {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
+        <a href="/alerts/all" class="btn btn-secondary btn-all-alerts" >All Alerts</a>
         <h2>Create Alert</h2>
         <form id="createAlertForm">
             <div class="form-group">
@@ -20,7 +28,6 @@
                 <label for="alert_price">Alert Price</label>
                 <input type="number" class="form-control" id="alert_price" required>
             </div>
-           
             <button type="submit" class="btn btn-primary">Create Alert</button>
         </form>
         <div id="responseMessage" class="mt-3"></div>
@@ -49,10 +56,9 @@
 
             const symbol = document.getElementById('symbol').value;
             const alert_price = document.getElementById('alert_price').value;
-          
 
             const accessToken = localStorage.getItem('access_token');
-            
+            console.log(accessToken)
 
             if (!accessToken) {
                 document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">No access token found. Please log in again.</div>';
@@ -66,8 +72,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': accessToken
                     },
-                    
-                    body: JSON.stringify({ symbol, alert_price}),
+                    body: JSON.stringify({ symbol, alert_price }),
                 });
 
                 const data = await response.json();

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>My Alerts</h1>
+            <!-- Delete Alerts Button -->
+            <a href="/alerts/delete" class="btn btn-danger">Delete Alerts</a>
+        </div>
+        <!-- Filters -->
+        <div class="form-group">
+            <label for="symbol-select">Select Symbol</label>
+            <select id="symbol-select" class="form-control">
+                <option value="">Select a symbol</option>
+                <!-- Options will be dynamically inserted here -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status-select">Select Status</label>
+            <select id="status-select" class="form-control">
+                <option value="">Select a status</option>
+                <option value="created">Created</option>
+                <option value="triggered">Triggered</option>
+                <!-- Add other statuses if needed -->
+            </select>
+        </div>
+
+        <!-- Alert Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="alerts-table-body">
+                <!-- Alerts will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let alerts = []; // Store alerts data
+
+        // Function to fetch symbols data from the server
+        async function fetchSymbols() {
+            try {
+                const response = await fetch('/symbols');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const symbols = await response.json();
+                populateSymbolDropdown(symbols);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Function to populate the symbol dropdown
+        function populateSymbolDropdown(symbols) {
+            const select = document.getElementById('symbol-select');
+            symbols.forEach(symbol => {
+                const option = document.createElement('option');
+                option.value = symbol;
+                option.textContent = symbol;
+                select.appendChild(option);
+            });
+        }
+
+        // Function to fetch alerts data from the server
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alerts = await response.json(); // Store alerts data
+                populateTable(alerts);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Function to populate the table with alert data
+        function populateTable(alertsData) {
+            const tableBody = document.getElementById('alerts-table-body');
+            tableBody.innerHTML = ''; // Clear any existing rows
+
+            alertsData.forEach(alert => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${alert.symbol}</td>
+                    <td>${alert.alert_price}</td>
+                    <td>${alert.status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to handle symbol and status selection
+        function handleFilterChange() {
+            const selectedSymbol = document.getElementById('symbol-select').value;
+            const selectedStatus = document.getElementById('status-select').value;
+            
+            let filteredAlerts = alerts;
+
+            if (selectedSymbol) {
+                filteredAlerts = filteredAlerts.filter(alert => alert.symbol === selectedSymbol);
+            }
+
+            if (selectedStatus) {
+                filteredAlerts = filteredAlerts.filter(alert => alert.status === selectedStatus);
+            }
+
+            populateTable(filteredAlerts);
+        }
+
+        // Fetch symbols and alerts when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchSymbols();
+            fetchAlerts();
+
+            // Add event listeners to the filters
+            document.getElementById('symbol-select').addEventListener('change', handleFilterChange);
+            document.getElementById('status-select').addEventListener('change', handleFilterChange);
+        });
+    </script>
+</body>
+</html>

@@ -1,17 +1,19 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import Blueprint, jsonify
 from utils.db import db
-from bson.objectid import ObjectId
-
+from bson import ObjectId
 delete_alert_blueprint = Blueprint('delete_alert', __name__)
 
+# Define the alerts collection
 alerts_collection = db['alerts']
-
-@delete_alert_blueprint.route('/alerts/delete/<alert_id>/', methods=['DELETE'])
-@jwt_required()
+@delete_alert_blueprint.route('/alerts/<alter_id>', methods=['DELETE'])
 def delete_alert(alert_id):
-    current_user = get_jwt_identity()
-    result = alerts_collection.delete_one({'_id': ObjectId(alert_id), 'user_id': current_user})
+    try:
+        # Convert alert_id to ObjectId if necessary
+        alert_id = alert_id
+    except Exception as e:
+        return jsonify({'error': 'Invalid alert ID'}), 400
+
+    result = alerts_collection.delete_one({'_id': alert_id})
 
     if result.deleted_count == 0:
         return jsonify({'error': 'Alert not found'}), 404
