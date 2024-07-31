@@ -15,7 +15,7 @@ client=start_websocket_client()
 @jwt_required()
 def create_alert():
     print("here")
-    #current_user = get_jwt_identity()
+    current_user = get_jwt_identity()
     data = request.json
     symbol = data.get('symbol')
     alert_price = data.get('alert_price')
@@ -28,7 +28,8 @@ def create_alert():
         #'user_id': current_user,
         'symbol': symbol,
         'alert_price': alert_price,
-        'status': 'created'
+        'status': 'created',
+        'username':current_user,
     }
 
     result = alerts_collection.insert_one(alert)
