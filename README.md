@@ -14,6 +14,7 @@ This project is a Flask-based web application designed for managing financial al
 
 - Filter Alerts: Users can filter alerts based on the symbol and status to view specific alerts.
 
+
 ## Installation
 
 Clone the project and navigate to the project directory:
@@ -26,6 +27,13 @@ Installation all packages
 ```bash
   pip install -r requirements.txt
 ```
+open .env file and update sender mail address and app password
+- To generate app password refer this
+https://knowledge.workspace.google.com/kb/how-to-create-app-passwords-000009237
+```bash
+EMAIL=<you sender email address>
+EMAIL_PASSWORD=<app password from google mananage>
+```
 Run the App
 ```bash
 python app.py
@@ -36,6 +44,7 @@ Using Docker
 ```bash
 docker-compose up --build
 ```
+    
     
 ## Acknowledgements
 
