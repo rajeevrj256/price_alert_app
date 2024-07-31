@@ -32,7 +32,7 @@ open .env file and update sender mail address and app password
 https://knowledge.workspace.google.com/kb/how-to-create-app-passwords-000009237
 ```bash
 EMAIL=<you sender email address>
-EMAIL_PASSWORD=<app password from google mananage>
+EMAIL_PASSWORD=<app password from manage your google account>
 ```
 Run the App
 ```bash
