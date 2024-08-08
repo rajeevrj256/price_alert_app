@@ -3,7 +3,7 @@ import requests
 
 get_symbols_blueprint = Blueprint('get_symbols', __name__)
 
-# Example symbols list. In a real application, you might fetch this from a database or an API.
+
 symbols_list = []
 
 @get_symbols_blueprint.route('/symbols', methods=['GET'])
