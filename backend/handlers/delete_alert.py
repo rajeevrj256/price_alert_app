@@ -8,8 +8,8 @@ alerts_collection = db['alerts']
 @delete_alert_blueprint.route('/alerts/<alter_id>', methods=['DELETE'])
 def delete_alert(alert_id):
     try:
-        # Convert alert_id to ObjectId if necessary
-        alert_id = alert_id
+        
+        alert_id = ObjectId(alert_id)
     except Exception as e:
         return jsonify({'error': 'Invalid alert ID'}), 400
 
