@@ -11,5 +11,5 @@ def get_symbols():
     
     response = requests.get('https://api.binance.com/api/v3/exchangeInfo')
     data = response.json()
-    symbols_list = [symbol['symbol'] for symbol in data['symbols']]
+    symbols_list = [symbol['symbol'] for symbol in data['symbol']]
     return jsonify(symbols_list), 200
