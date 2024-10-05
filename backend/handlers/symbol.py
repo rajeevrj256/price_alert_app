@@ -7,6 +7,7 @@ get_symbols_blueprint = Blueprint('get_symbols', __name__)
 
 
 symbols_list = []
+logging.basicConfig(level=logging.INFO)
 
 @get_symbols_blueprint.route('/symbols', methods=['GET'])
 def get_symbols():

@@ -12,6 +12,7 @@ services:
       - db
     environment:
       - MONGO_URI=mongodb+srv://sorajeev5918:g3u9NH3VKJ45yTKw@cluster0.egtqq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    restart: unless-stopped
 
 
   db:
@@ -26,6 +27,7 @@ services:
       - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
     ports:
       - "27017:27017"
+    restart: unless-stopped 
 
 volumes:
   mongo_data:
